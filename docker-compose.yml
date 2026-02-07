@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: chess_db
+    environment:
+      POSTGRES_DB: chess_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - chess_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: chess_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - chess_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: chess_backend
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/chess_db
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-secret-key-change-in-production
+      REFRESH_TOKEN_SECRET: dev-refresh-secret-change-in-production
+      FRONTEND_URL: http://localhost
+      NODE_ENV: production
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - chess_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: chess_frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - chess_network
+
+volumes:
+  postgres_data:
+
+networks:
+  chess_network:
+    driver: bridge

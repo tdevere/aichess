@@ -1,0 +1,70 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  deploy:
+    name: Deploy to Azure Container Apps
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-e2e]  # From ci-cd.yml
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Build and push backend image
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+      
+      - run: |
+          docker build -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/backend:${{ github.sha }} -f backend/Dockerfile .
+          docker push ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/backend:${{ github.sha }}
+          
+          docker build -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }} -f frontend/Dockerfile .
+          docker push ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
+      
+      - name: Deploy backend to Azure Container Apps
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az containerapp update \
+              --name ${{ secrets.AZURE_BACKEND_APP }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --image ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/backend:${{ github.sha }}
+      
+      - name: Deploy frontend to Azure Container Apps
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az containerapp update \
+              --name ${{ secrets.AZURE_FRONTEND_APP }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --image ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/frontend:${{ github.sha }}
+      
+      - name: Run smoke tests
+        run: |
+          BACKEND_URL=$(az containerapp show \
+            --name ${{ secrets.AZURE_BACKEND_APP }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --query properties.configuration.ingress.fqdn -o tsv)
+          
+          # Wait for deployment
+          sleep 30
+          
+          # Test health endpoint
+          curl -f https://$BACKEND_URL/health || exit 1
+          
+          echo "✅ Smoke tests passed"

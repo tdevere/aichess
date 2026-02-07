@@ -1,0 +1,29 @@
+{
+  "name": "chess-platform",
+  "version": "1.0.0",
+  "description": "Chess.com clone - Full-featured chess platform",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install && cd ../shared && npm install",
+    "build:shared": "cd shared && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:all": "npm run build:shared && npm run build:backend && npm run build:frontend",
+    "pack:deploy": "node scripts/pack-deploy.js",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "setup": "npm run install:all && npm run build:shared",
+    "test:agent": "node scripts/test-agent.js",
+    "test:backend": "cd backend && npm test",
+    "test:e2e": "cd frontend && npx playwright test",
+    "test:auth": "cd backend && npm test -- auth.test.ts",
+    "test:puzzles": "cd backend && npm test -- puzzles.test.ts",
+    "test:bots": "cd backend && npm test -- bots.test.ts",
+    "test:socket": "cd backend && npm test -- socket.test.ts --testTimeout=60000",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
+  },
+  "keywords": ["chess", "game", "websocket", "react", "typescript"],
+  "author": "",
+  "license": "MIT"
+}
