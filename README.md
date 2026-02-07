@@ -131,11 +131,9 @@ npm run preview
 The GitHub Actions workflow in [.github/workflows/deploy.yml](.github/workflows/deploy.yml) builds the monorepo, packages the deploy artifact, deploys to the staging slot, and swaps to production.
 
 Required GitHub Secrets:
-- `AZURE_CLIENT_ID`
-- `AZURE_TENANT_ID`
-- `AZURE_SUBSCRIPTION_ID`
 
 Runtime configuration is managed in App Service settings (e.g., `DATABASE_URL`, `JWT_SECRET`, `REFRESH_TOKEN_SECRET`, `MICROSOFT_CLIENT_ID`, `MICROSOFT_CLIENT_SECRET`).
+- Test trigger: this line is used to verify the CI/CD pipeline.
 
 ## Testing
 
