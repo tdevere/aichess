@@ -4,10 +4,20 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
+    inputs:
+      swap_to_production:
+        description: "Swap staging to production"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   id-token: write
   contents: read
+
+concurrency:
+  group: aichess-deploy
+  cancel-in-progress: false
 
 env:
   RESOURCE_GROUP: rg-aichess-v4
@@ -53,14 +63,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Ensure staging slot exists
-        run: |
-          az webapp deployment slot create \
-            --resource-group $RESOURCE_GROUP \
-            --name $APP_NAME \
-            --slot $SLOT_NAME \
-            --configuration-source $APP_NAME
-
       - name: Deploy to staging slot
         uses: azure/webapps-deploy@v3
         with:
@@ -69,6 +71,7 @@ jobs:
           package: deploy.zip
 
       - name: Swap staging to production
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.swap_to_production == true }}
         run: |
           az webapp deployment slot swap \
             --resource-group $RESOURCE_GROUP \
