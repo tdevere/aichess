@@ -6,6 +6,7 @@ describe('Puzzle API Integration Tests', () => {
   let accessToken: string;
   let userId: string;
   let testPuzzleId: string;
+  let seededPuzzleIds: string[] = [];
 
   beforeAll(async () => {
     // Create test user
@@ -22,6 +23,33 @@ describe('Puzzle API Integration Tests', () => {
     accessToken = authResponse.body.accessToken;
     userId = authResponse.body.user.id;
 
+    // Seed puzzles if none exist (required for CI)
+    const existing = await pool.query('SELECT COUNT(*) FROM puzzles');
+    if (parseInt(existing.rows[0].count, 10) === 0) {
+      const seedResult = await pool.query(
+        `INSERT INTO puzzles (fen, moves, rating, theme, difficulty, description)
+         VALUES
+         ($1, $2, $3, $4, $5, $6),
+         ($7, $8, $9, $10, $11, $12)
+         RETURNING id`,
+        [
+          '5rk1/pp4pp/2p5/2b5/4PQ2/6P1/PPP4P/5RK1 w - - 0 1',
+          JSON.stringify(['f4f8']),
+          800,
+          'checkmate',
+          'beginner',
+          'Mate in one',
+          'r1bq1rk1/ppp2ppp/2np1n2/2b1p3/2B1P3/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 1',
+          JSON.stringify(['c4f7', 'f8f7', 'c3d5']),
+          1400,
+          'tactical',
+          'intermediate',
+          'Tactical sequence'
+        ]
+      );
+      seededPuzzleIds = seedResult.rows.map((row) => row.id);
+    }
+
     // Get a test puzzle ID
     const puzzleResponse = await request(app)
       .get('/api/puzzles/random')
@@ -34,6 +62,9 @@ describe('Puzzle API Integration Tests', () => {
     // Cleanup
     if (userId) {
       await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+    }
+    if (seededPuzzleIds.length > 0) {
+      await pool.query('DELETE FROM puzzles WHERE id = ANY($1::uuid[])', [seededPuzzleIds]);
     }
   });
 
