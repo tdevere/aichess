@@ -9,6 +9,9 @@ build/
 .vscode/
 .idea/
 coverage/
+.playwright-mcp/
+frontend/playwright-report/
+frontend/test-results/
 .azure/
 deploy-temp/
 deploy.zip

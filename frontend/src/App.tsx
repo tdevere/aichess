@@ -14,7 +14,7 @@ function App() {
   const { isAuthenticated, isAdmin } = useAuthStore();
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen eok-page text-slate-100">
       <Routes>
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
