@@ -47,6 +47,9 @@ jobs:
 
       - name: Build shared/backend/frontend
         run: npm run build:all
+        env:
+          VITE_APP_VERSION: ${{ github.run_id }}
+          VITE_BUILD_TIME: ${{ github.run_started_at }}
 
       - name: Stage deployment files
         run: npm run pack:deploy

@@ -9,6 +9,7 @@ const LoginPage: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const apiBase = import.meta.env.VITE_API_BASE_URL ?? '';
   const navigate = useNavigate();
   const { login } = useAuthStore();
 
@@ -105,7 +106,7 @@ const LoginPage: React.FC = () => {
           </div>
 
           <a
-            href="http://localhost:5000/api/auth/microsoft"
+            href={`${apiBase}/api/auth/microsoft`}
             className="mt-4 w-full border border-slate-700 bg-slate-900/60 text-slate-200 hover:bg-slate-900/80 font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition duration-200"
           >
             <svg className="w-5 h-5" viewBox="0 0 23 23">
