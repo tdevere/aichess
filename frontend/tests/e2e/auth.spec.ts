@@ -8,7 +8,8 @@ test.describe('Authentication Flow', () => {
   };
 
   test('should register new user successfully', async ({ page }) => {
-    await page.goto('/register');
+    await page.goto('/register', { waitUntil: 'networkidle' });
+    await page.waitForSelector('input[name="username"]', { state: 'visible' });
     
     await page.fill('input[name="username"]', testUser.username);
     await page.fill('input[name="email"]', testUser.email);
@@ -26,7 +27,8 @@ test.describe('Authentication Flow', () => {
 
   test('should login with valid credentials', async ({ page }) => {
     // First register a user
-    await page.goto('/register');
+    await page.goto('/register', { waitUntil: 'networkidle' });
+    await page.waitForSelector('input[name="username"]', { state: 'visible' });
     await page.fill('input[name="username"]', testUser.username);
     await page.fill('input[name="email"]', testUser.email);
     await page.fill('input[name="password"]', testUser.password);
@@ -38,7 +40,8 @@ test.describe('Authentication Flow', () => {
     await page.evaluate(() => localStorage.clear());
     
     // Now login
-    await page.goto('/login');
+    await page.goto('/login', { waitUntil: 'networkidle' });
+    await page.waitForSelector('input[name="email"]', { state: 'visible' });
     await page.fill('input[name="email"]', testUser.email);
     await page.fill('input[name="password"]', testUser.password);
     await page.click('button[type="submit"]');
@@ -48,7 +51,8 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should reject login with invalid credentials', async ({ page }) => {
-    await page.goto('/login');
+    await page.goto('/login', { waitUntil: 'networkidle' });
+    await page.waitForSelector('input[name="email"]', { state: 'visible' });
     
     await page.fill('input[name="email"]', 'invalid@example.com');
     await page.fill('input[name="password"]', 'wrongpassword');
@@ -59,7 +63,8 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should validate registration form', async ({ page }) => {
-    await page.goto('/register');
+    await page.goto('/register', { waitUntil: 'networkidle' });
+    await page.waitForSelector('input[name="username"]', { state: 'visible' });
     
     // Try to submit with empty fields
     await page.click('button[type="submit"]');
