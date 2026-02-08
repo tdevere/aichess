@@ -9,6 +9,7 @@ import GamePage from './pages/GamePage';
 import PuzzlePage from './pages/PuzzlePage';
 import AdminPage from './pages/AdminPage';
 import AdminUserDetailPage from './pages/AdminUserDetailPage';
+import { appVersion } from './utils/version';
 
 function App() {
   const { isAuthenticated, isAdmin } = useAuthStore();
@@ -26,6 +27,9 @@ function App() {
         <Route path="/admin" element={isAuthenticated && isAdmin ? <AdminPage /> : <Navigate to="/" />} />
         <Route path="/admin/users/:id" element={isAuthenticated && isAdmin ? <AdminUserDetailPage /> : <Navigate to="/" />} />
       </Routes>
+      <div className="fixed bottom-4 right-4 text-xs tracking-[0.2em] uppercase text-slate-400 bg-slate-900/70 border border-slate-700/70 rounded-full px-3 py-1 shadow-lg">
+        Version {appVersion}
+      </div>
     </div>
   );
 }
