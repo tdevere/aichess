@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Authentication Flow', () => {
   const testUser = {
-    username: `testuser_${Date.now()}`,
+    username: `testuser${Date.now()}`,
     email: `test_${Date.now()}@example.com`,
     password: 'TestPassword123!',
   };
@@ -21,7 +21,7 @@ test.describe('Authentication Flow', () => {
     await expect(page).toHaveURL('/');
     
     // Should show user info or welcome message
-    await expect(page.locator('text=Play Chess')).toBeVisible();
+    await expect(page.locator('text=Quick Play')).toBeVisible();
   });
 
   test('should login with valid credentials', async ({ page }) => {
@@ -33,9 +33,10 @@ test.describe('Authentication Flow', () => {
     await page.fill('input[name="confirmPassword"]', testUser.password);
     await page.click('button[type="submit"]');
     
-    // Logout
+    // Logout via user menu
     await page.goto('/');
-    await page.click('text=Logout', { timeout: 5000 }).catch(() => {});
+    await page.getByRole('button', { name: new RegExp(testUser.username) }).click();
+    await page.getByText('Logout').click();
     
     // Now login
     await page.goto('/login');
