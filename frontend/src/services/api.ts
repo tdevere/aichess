@@ -47,6 +47,12 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      const requestUrl = originalRequest?.url || '';
+      const isAuthEndpoint = requestUrl.includes('/auth/login') || requestUrl.includes('/auth/register') || requestUrl.includes('/auth/refresh');
+      if (isAuthEndpoint) {
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         return new Promise(function(resolve, reject) {
           failedQueue.push({resolve, reject});
@@ -66,7 +72,7 @@ api.interceptors.response.use(
 
         // If no refresh token is available, don't even try the backend
         if (!refreshToken) {
-          throw new Error('No refresh token available');
+          throw error;
         }
 
         const response = await axios.post('/api/auth/refresh', { refreshToken });
