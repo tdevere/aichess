@@ -69,6 +69,7 @@ const RegisterPage: React.FC = () => {
             </label>
             <input
               type="text"
+              name="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-3 py-2 rounded-lg eok-input"
@@ -83,6 +84,7 @@ const RegisterPage: React.FC = () => {
             </label>
             <input
               type="email"
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 rounded-lg eok-input"
@@ -96,6 +98,7 @@ const RegisterPage: React.FC = () => {
             </label>
             <input
               type="password"
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 rounded-lg eok-input"
@@ -110,6 +113,7 @@ const RegisterPage: React.FC = () => {
             </label>
             <input
               type="password"
+              name="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full px-3 py-2 rounded-lg eok-input"

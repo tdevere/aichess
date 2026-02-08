@@ -53,6 +53,7 @@ const LoginPage: React.FC = () => {
             </label>
             <input
               type="email"
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 rounded-lg eok-input"
@@ -66,6 +67,7 @@ const LoginPage: React.FC = () => {
             </label>
             <input
               type="password"
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 rounded-lg eok-input"
