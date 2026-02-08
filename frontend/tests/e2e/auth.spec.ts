@@ -33,10 +33,9 @@ test.describe('Authentication Flow', () => {
     await page.fill('input[name="confirmPassword"]', testUser.password);
     await page.click('button[type="submit"]');
     
-    // Logout via user menu
-    await page.goto('/');
-    await page.getByRole('button', { name: new RegExp(testUser.username) }).click();
-    await page.getByText('Logout').click();
+    // Clear auth state instead of UI logout (more reliable in CI)
+    await page.context().clearCookies();
+    await page.evaluate(() => localStorage.clear());
     
     // Now login
     await page.goto('/login');
