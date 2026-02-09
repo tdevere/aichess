@@ -51,7 +51,7 @@ passport.use(
         // Generate a random unused password hash (since they use Microsoft login)
         const newUserResult = await pool.query(
           `INSERT INTO users (
-            username, email, password_hash, microsoft_id, is_verified, avatar
+            username, email, password_hash, microsoft_id, email_verified, avatar
           ) VALUES ($1, $2, $3, $4, true, $5) RETURNING *`,
           [
             displayName  + '_' + Math.random().toString(36).substring(7), // Ensure unique username
