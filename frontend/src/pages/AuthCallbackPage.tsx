@@ -12,16 +12,8 @@ const AuthCallbackPage: React.FC = () => {
     const refreshToken = searchParams.get('refreshToken');
 
     if (token && refreshToken) {
-      // Store tokens
       setTokens(token, refreshToken);
-      
-      // Fetch user profile (store will handle this if implemented, or we might need to trigger it)
-      // For now, redirect to home which should load the user
       navigate('/');
-      
-      // Ideally we should verify the token and get user data immediately
-      // But triggering a reload or ensuring App.tsx loads user is sufficient
-      window.location.href = '/'; 
     } else {
       console.error('Missing tokens in callback URL');
       navigate('/login?error=missing_tokens');

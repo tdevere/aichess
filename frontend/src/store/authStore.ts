@@ -21,6 +21,7 @@ interface AuthStore {
   isAuthenticated: boolean;
   isAdmin: boolean;
   login: (user: User, accessToken: string, refreshToken: string) => void;
+  setTokens: (accessToken: string, refreshToken: string) => void;
   logout: () => void;
   updateToken: (accessToken: string) => void;
 }
@@ -44,6 +45,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
     localStorage.setItem('user', JSON.stringify(user));
     set({ user, accessToken, refreshToken, isAuthenticated: true, isAdmin: user.role === 'admin' });
     console.log('🔐 Auth store updated, isAdmin:', user.role === 'admin');
+  },
+
+  setTokens: (accessToken, refreshToken) => {
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    set({ accessToken, refreshToken, isAuthenticated: true });
   },
   
   logout: () => {
